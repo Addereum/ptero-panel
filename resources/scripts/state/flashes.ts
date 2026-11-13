@@ -8,6 +8,7 @@ export interface FlashStore {
     addError: Action<FlashStore, { message: string; key?: string }>;
     clearAndAddHttpError: Action<FlashStore, { error?: Error | any | null; key?: string }>;
     clearFlashes: Action<FlashStore, string | void>;
+    dismissFlash: Action<FlashStore, string>;
 }
 
 export interface FlashMessage {
@@ -48,6 +49,10 @@ const flashes: FlashStore = {
 
     clearFlashes: action((state, payload) => {
         state.items = payload ? state.items.filter((flashes) => flashes.key !== payload) : [];
+    }),
+
+    dismissFlash: action((state, payload) => {
+        state.items = state.items.filter((flash) => (flash.id || flash.message) !== payload);
     }),
 };
 

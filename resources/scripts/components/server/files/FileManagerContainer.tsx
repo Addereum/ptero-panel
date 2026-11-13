@@ -21,6 +21,8 @@ import { useStoreActions } from '@/state/hooks';
 import ErrorBoundary from '@/components/elements/ErrorBoundary';
 import { FileActionCheckbox } from '@/components/server/files/SelectFileCheckbox';
 import { hashToPath } from '@/helpers';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faFolderOpen } from '@fortawesome/free-solid-svg-icons';
 import style from './style.module.css';
 
 const sortFiles = (files: FileObject[]): FileObject[] => {
@@ -90,7 +92,11 @@ export default () => {
             ) : (
                 <>
                     {!files.length ? (
-                        <p css={tw`text-sm text-neutral-400 text-center`}>This directory seems to be empty.</p>
+                        <div className={'p-12 text-center rounded-2xl bg-[#141a22] border border-white/[0.08] my-4'}>
+                            <FontAwesomeIcon icon={faFolderOpen} className={'text-3xl text-neutral-600 mb-3'} />
+                            <p className={'text-sm font-medium text-neutral-300 m-0'}>This directory is empty</p>
+                            <p className={'text-xs text-neutral-500 mt-1 mb-0'}>Upload or create files to get started.</p>
+                        </div>
                     ) : (
                         <CSSTransition classNames={'fade'} timeout={150} appear in>
                             <div>

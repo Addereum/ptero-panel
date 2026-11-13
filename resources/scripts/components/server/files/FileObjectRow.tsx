@@ -1,19 +1,49 @@
+import React, { memo } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFileAlt, faFileArchive, faFileImport, faFolder } from '@fortawesome/free-solid-svg-icons';
+import {
+    faCode,
+    faFileAlt,
+    faFileArchive,
+    faFileCode,
+    faFileImage,
+    faFileImport,
+    faFolder,
+} from '@fortawesome/free-solid-svg-icons';
 import { encodePathSegments } from '@/helpers';
 import { differenceInHours, format, formatDistanceToNow } from 'date-fns';
-import React, { memo } from 'react';
 import { FileObject } from '@/api/server/files/loadDirectory';
 import FileDropdownMenu from '@/components/server/files/FileDropdownMenu';
 import { ServerContext } from '@/state/server';
 import { NavLink, useRouteMatch } from 'react-router-dom';
-import tw from 'twin.macro';
 import isEqual from 'react-fast-compare';
 import SelectFileCheckbox from '@/components/server/files/SelectFileCheckbox';
 import { usePermissions } from '@/plugins/usePermissions';
 import { join } from 'pathe';
 import { bytesToString } from '@/lib/formatters';
 import styles from './style.module.css';
+
+const getFileIcon = (file: FileObject) => {
+    if (!file.isFile) {
+        return { icon: faFolder, color: 'text-amber-400' };
+    }
+    if (file.isSymlink) {
+        return { icon: faFileImport, color: 'text-cyan-400' };
+    }
+    if (file.isArchiveType()) {
+        return { icon: faFileArchive, color: 'text-purple-400' };
+    }
+    const ext = file.name.split('.').pop()?.toLowerCase();
+    if (['yml', 'yaml', 'json', 'toml', 'properties', 'conf', 'cfg', 'ini', 'env', 'pteroignore'].includes(ext || '')) {
+        return { icon: faFileCode, color: 'text-cyan-400' };
+    }
+    if (['jar', 'sh', 'bat', 'py', 'js', 'ts', 'php'].includes(ext || '')) {
+        return { icon: faCode, color: 'text-emerald-400' };
+    }
+    if (['png', 'jpg', 'jpeg', 'gif', 'svg', 'webp', 'ico'].includes(ext || '')) {
+        return { icon: faFileImage, color: 'text-pink-400' };
+    }
+    return { icon: faFileAlt, color: 'text-neutral-400' };
+};
 
 const Clickable: React.FC<{ file: FileObject }> = memo(({ file, children }) => {
     const [canRead] = usePermissions(['file.read']);
@@ -34,37 +64,46 @@ const Clickable: React.FC<{ file: FileObject }> = memo(({ file, children }) => {
     );
 }, isEqual);
 
-const FileObjectRow = ({ file }: { file: FileObject }) => (
-    <div
-        className={styles.file_row}
-        key={file.name}
-        onContextMenu={(e) => {
-            e.preventDefault();
-            window.dispatchEvent(new CustomEvent(`pterodactyl:files:ctx:${file.key}`, { detail: e.clientX }));
-        }}
-    >
-        <SelectFileCheckbox name={file.name} />
-        <Clickable file={file}>
-            <div css={tw`flex-none text-neutral-400 ml-6 mr-4 text-lg pl-3`}>
-                {file.isFile ? (
-                    <FontAwesomeIcon
-                        icon={file.isSymlink ? faFileImport : file.isArchiveType() ? faFileArchive : faFileAlt}
-                    />
-                ) : (
-                    <FontAwesomeIcon icon={faFolder} />
+const FileObjectRow = ({ file }: { file: FileObject }) => {
+    const { icon, color } = getFileIcon(file);
+
+    return (
+        <div
+            className={styles.file_row}
+            key={file.name}
+            onContextMenu={(e) => {
+                e.preventDefault();
+                window.dispatchEvent(new CustomEvent(`pterodactyl:files:ctx:${file.key}`, { detail: e.clientX }));
+            }}
+        >
+            <div className={'pl-3'}>
+                <SelectFileCheckbox name={file.name} />
+            </div>
+            <Clickable file={file}>
+                <div className={`flex-none ml-3 mr-3 text-base ${color}`}>
+                    <FontAwesomeIcon icon={icon} />
+                </div>
+                <div className={'flex-1 truncate font-medium text-neutral-200'}>{file.name}</div>
+                {file.isFile && (
+                    <div className={'w-28 text-right mr-4 hidden sm:block text-xs font-mono text-neutral-400'}>
+                        {bytesToString(file.size)}
+                    </div>
                 )}
+                <div
+                    className={'w-40 text-right mr-4 hidden md:block text-xs text-neutral-500'}
+                    title={file.modifiedAt.toString()}
+                >
+                    {Math.abs(differenceInHours(file.modifiedAt, new Date())) > 48
+                        ? format(file.modifiedAt, 'MMM do, yyyy h:mma')
+                        : formatDistanceToNow(file.modifiedAt, { addSuffix: true })}
+                </div>
+            </Clickable>
+            <div className={'pr-3'}>
+                <FileDropdownMenu file={file} />
             </div>
-            <div css={tw`flex-1 truncate`}>{file.name}</div>
-            {file.isFile && <div css={tw`w-1/6 text-right mr-4 hidden sm:block`}>{bytesToString(file.size)}</div>}
-            <div css={tw`w-1/5 text-right mr-4 hidden md:block`} title={file.modifiedAt.toString()}>
-                {Math.abs(differenceInHours(file.modifiedAt, new Date())) > 48
-                    ? format(file.modifiedAt, 'MMM do, yyyy h:mma')
-                    : formatDistanceToNow(file.modifiedAt, { addSuffix: true })}
-            </div>
-        </Clickable>
-        <FileDropdownMenu file={file} />
-    </div>
-);
+        </div>
+    );
+};
 
 export default memo(FileObjectRow, (prevProps, nextProps) => {
     /* eslint-disable @typescript-eslint/no-unused-vars */

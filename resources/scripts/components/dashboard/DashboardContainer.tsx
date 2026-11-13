@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Server } from '@/api/server/getServer';
 import getServers from '@/api/getServers';
 import ServerRow from '@/components/dashboard/ServerRow';
+import ServerCard from '@/components/dashboard/ServerCard';
 import Spinner from '@/components/elements/Spinner';
 import PageContentBlock from '@/components/elements/PageContentBlock';
 import useFlash from '@/plugins/useFlash';
@@ -14,6 +15,9 @@ import Pagination from '@/components/elements/Pagination';
 import { useLocation } from 'react-router-dom';
 import Input from '@/components/elements/Input';
 import { Button } from '@/components/elements/button';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faList, faThLarge } from '@fortawesome/free-solid-svg-icons';
+import classNames from 'classnames';
 
 export default () => {
     const { search } = useLocation();
@@ -31,6 +35,7 @@ export default () => {
     const uuid = useStoreState((state) => state.user.data!.uuid);
     const rootAdmin = useStoreState((state) => state.user.data!.rootAdmin);
     const [showOnlyAdmin, setShowOnlyAdmin] = usePersistedState(`${uuid}:show_all_servers`, false);
+    const [viewMode, setViewMode] = usePersistedState<'grid' | 'list'>(`${uuid}:dashboard_view_mode`, 'grid');
     const showOthers = rootAdmin && !!showOnlyAdmin;
 
     const { data: servers, error } = useSWR<PaginatedResult<Server>>(
@@ -86,20 +91,53 @@ export default () => {
                         onChange={(event) => setSearchInput(event.target.value)}
                     />
                 </div>
-                {rootAdmin && (
-                    <Button.Text
-                        type={'button'}
-                        aria-pressed={showOthers}
-                        className={'self-start sm:self-auto'}
-                        variant={showOthers ? Button.Variants.Primary : Button.Variants.Secondary}
-                        onClick={() => {
-                            setShowOnlyAdmin(!showOthers);
-                            setFilters({ query: term, page: 1 });
-                        }}
-                    >
-                        Other users’ servers
-                    </Button.Text>
-                )}
+                <div className={'flex items-center gap-2 self-start sm:self-auto'}>
+                    {rootAdmin && (
+                        <Button.Text
+                            type={'button'}
+                            aria-pressed={showOthers}
+                            variant={showOthers ? Button.Variants.Primary : Button.Variants.Secondary}
+                            onClick={() => {
+                                setShowOnlyAdmin(!showOthers);
+                                setFilters({ query: term, page: 1 });
+                            }}
+                        >
+                            Other users’ servers
+                        </Button.Text>
+                    )}
+
+                    {/* View Mode Switcher: Grid vs List */}
+                    <div className={'flex items-center p-1 rounded-xl bg-[#141a22] border border-white/[0.08]'}>
+                        <button
+                            type={'button'}
+                            onClick={() => setViewMode('grid')}
+                            className={classNames(
+                                'px-2.5 py-1 rounded-lg text-xs font-medium transition-all duration-150 cursor-pointer border-0',
+                                viewMode === 'grid'
+                                    ? 'bg-blue-600 text-white shadow-sm'
+                                    : 'bg-transparent text-neutral-400 hover:text-white'
+                            )}
+                            title={'Grid View'}
+                            aria-label={'Grid View'}
+                        >
+                            <FontAwesomeIcon icon={faThLarge} className={'text-xs'} />
+                        </button>
+                        <button
+                            type={'button'}
+                            onClick={() => setViewMode('list')}
+                            className={classNames(
+                                'px-2.5 py-1 rounded-lg text-xs font-medium transition-all duration-150 cursor-pointer border-0',
+                                viewMode === 'list'
+                                    ? 'bg-blue-600 text-white shadow-sm'
+                                    : 'bg-transparent text-neutral-400 hover:text-white'
+                            )}
+                            title={'List View'}
+                            aria-label={'List View'}
+                        >
+                            <FontAwesomeIcon icon={faList} className={'text-xs'} />
+                        </button>
+                    </div>
+                </div>
             </div>
             {isSearchPending || (!servers && !error) ? (
                 <div role={'status'}>
@@ -111,11 +149,19 @@ export default () => {
                     <Pagination data={servers} onPageSelect={(page) => setFilters({ query, page })}>
                         {({ items }) =>
                             items.length > 0 ? (
-                                <div css={tw`space-y-2`}>
-                                    {items.map((server) => (
-                                        <ServerRow key={server.uuid} server={server} />
-                                    ))}
-                                </div>
+                                viewMode === 'grid' ? (
+                                    <div className={'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'}>
+                                        {items.map((server) => (
+                                            <ServerCard key={server.uuid} server={server} />
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <div className={'space-y-2'}>
+                                        {items.map((server) => (
+                                            <ServerRow key={server.uuid} server={server} />
+                                        ))}
+                                    </div>
+                                )
                             ) : (
                                 <p role={'status'} css={tw`py-6 text-center text-sm text-gray-300 break-words`}>
                                     {emptyMessage}

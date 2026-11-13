@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { ServerContext } from '@/state/server';
 import { NavLink, useLocation } from 'react-router-dom';
 import { encodePathSegments, hashToPath } from '@/helpers';
-import tw from 'twin.macro';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faFolderOpen } from '@fortawesome/free-solid-svg-icons';
 
 interface Props {
     renderLeft?: JSX.Element;
@@ -28,44 +29,50 @@ export default ({ renderLeft, withinFileEditor, isNewFile }: Props) => {
     const breadcrumbs = (): { name: string; path?: string }[] =>
         directory
             .split('/')
-            .filter((directory) => !!directory)
-            .map((directory, index, dirs) => {
+            .filter((dir) => !!dir)
+            .map((dir, index, dirs) => {
                 if (!withinFileEditor && index === dirs.length - 1) {
-                    return { name: directory };
+                    return { name: dir };
                 }
 
-                return { name: directory, path: `/${dirs.slice(0, index + 1).join('/')}` };
+                return { name: dir, path: `/${dirs.slice(0, index + 1).join('/')}` };
             });
 
     return (
-        <div css={tw`flex flex-grow-0 items-center text-sm text-neutral-500 overflow-x-hidden`}>
-            {renderLeft || <div css={tw`w-12`} />}/<span css={tw`px-1 text-neutral-300`}>home</span>/
-            <NavLink to={`/server/${id}/files`} css={tw`px-1 text-neutral-200 no-underline hover:text-neutral-100`}>
-                container
-            </NavLink>
-            /
-            {breadcrumbs().map((crumb, index) =>
-                crumb.path ? (
+        <div className={'flex items-center gap-1.5 flex-wrap text-xs sm:text-sm text-neutral-400 overflow-x-hidden'}>
+            {renderLeft}
+            <div className={'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#141a22] border border-white/[0.08] text-xs'}>
+                <FontAwesomeIcon icon={faFolderOpen} className={'text-amber-400 text-xs mr-1'} />
+                <NavLink
+                    to={`/server/${id}/files`}
+                    className={'text-neutral-300 hover:text-white transition-colors duration-150 no-underline font-medium'}
+                >
+                    container
+                </NavLink>
+
+                {breadcrumbs().map((crumb, index) => (
                     <React.Fragment key={index}>
-                        <NavLink
-                            to={`/server/${id}/files#${encodePathSegments(crumb.path)}`}
-                            css={tw`px-1 text-neutral-200 no-underline hover:text-neutral-100`}
-                        >
-                            {crumb.name}
-                        </NavLink>
-                        /
+                        <span className={'text-neutral-600'}>/</span>
+                        {crumb.path ? (
+                            <NavLink
+                                to={`/server/${id}/files#${encodePathSegments(crumb.path)}`}
+                                className={'text-neutral-300 hover:text-white transition-colors duration-150 no-underline font-medium'}
+                            >
+                                {crumb.name}
+                            </NavLink>
+                        ) : (
+                            <span className={'text-white font-semibold'}>{crumb.name}</span>
+                        )}
                     </React.Fragment>
-                ) : (
-                    <span key={index} css={tw`px-1 text-neutral-300`}>
-                        {crumb.name}
-                    </span>
-                )
-            )}
-            {file && (
-                <React.Fragment>
-                    <span css={tw`px-1 text-neutral-300`}>{file}</span>
-                </React.Fragment>
-            )}
+                ))}
+
+                {file && (
+                    <React.Fragment>
+                        <span className={'text-neutral-600'}>/</span>
+                        <span className={'text-cyan-300 font-semibold'}>{file}</span>
+                    </React.Fragment>
+                )}
+            </div>
         </div>
     );
 };
