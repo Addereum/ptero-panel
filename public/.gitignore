@@ -1,4 +1,1 @@
-assets
-assets/*
-!assets/svgs
-!assets/svgs/*.svg
+# compiled assets are tracked for git deployment
