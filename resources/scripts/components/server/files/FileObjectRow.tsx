@@ -76,11 +76,9 @@ const FileObjectRow = ({ file }: { file: FileObject }) => {
                 window.dispatchEvent(new CustomEvent(`pterodactyl:files:ctx:${file.key}`, { detail: e.clientX }));
             }}
         >
-            <div className={'pl-3'}>
-                <SelectFileCheckbox name={file.name} />
-            </div>
+            <SelectFileCheckbox name={file.name} />
             <Clickable file={file}>
-                <div className={`flex-none ml-3 mr-3 text-base ${color}`}>
+                <div className={`flex-none mr-3 text-base ${color}`}>
                     <FontAwesomeIcon icon={icon} />
                 </div>
                 <div className={'flex-1 truncate font-medium text-neutral-200'}>{file.name}</div>
@@ -98,7 +96,7 @@ const FileObjectRow = ({ file }: { file: FileObject }) => {
                         : formatDistanceToNow(file.modifiedAt, { addSuffix: true })}
                 </div>
             </Clickable>
-            <div className={'pr-3'}>
+            <div className={'pr-3 flex-shrink-0'}>
                 <FileDropdownMenu file={file} />
             </div>
         </div>

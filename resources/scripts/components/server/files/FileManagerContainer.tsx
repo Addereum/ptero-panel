@@ -64,15 +64,18 @@ export default () => {
     return (
         <ServerContentBlock title={'File Manager'} showFlashKey={'files'}>
             <ErrorBoundary>
-                <div className={'flex flex-wrap-reverse md:flex-nowrap mb-4'}>
+                <div className={'flex flex-wrap-reverse md:flex-nowrap items-center justify-between gap-3 mb-4'}>
                     <FileManagerBreadcrumbs
                         renderLeft={
-                            <FileActionCheckbox
-                                type={'checkbox'}
-                                css={tw`mx-4`}
-                                checked={selectedFilesLength === (files?.length === 0 ? -1 : files?.length)}
-                                onChange={onSelectAllClick}
-                            />
+                            <label className={'inline-flex items-center justify-center px-3 py-1.5 rounded-xl bg-[#141a22] border border-white/[0.08] hover:border-white/[0.18] transition-colors cursor-pointer select-none m-0'}>
+                                <FileActionCheckbox
+                                    type={'checkbox'}
+                                    checked={selectedFilesLength === (files?.length === 0 ? -1 : files?.length)}
+                                    onChange={onSelectAllClick}
+                                    title={'Select all files'}
+                                    aria-label={'Select all files'}
+                                />
+                            </label>
                         }
                     />
                     <Can action={'file.create'}>

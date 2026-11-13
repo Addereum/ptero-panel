@@ -6,10 +6,16 @@ import Input from '@/components/elements/Input';
 
 export const FileActionCheckbox = styled(Input)`
     && {
-        ${tw`border-neutral-500 bg-transparent`};
+        ${tw`cursor-pointer rounded border border-white/20 bg-white/[0.04] text-primary-500 transition-all`};
+        width: 1.05rem;
+        height: 1.05rem;
+
+        &:checked {
+            ${tw`border-primary-500 bg-primary-600`};
+        }
 
         &:not(:checked) {
-            ${tw`hover:border-neutral-300`};
+            ${tw`hover:border-white/40`};
         }
     }
 `;
@@ -20,7 +26,7 @@ export default ({ name }: { name: string }) => {
     const removeSelectedFile = ServerContext.useStoreActions((actions) => actions.files.removeSelectedFile);
 
     return (
-        <label css={tw`flex-none px-4 py-2 absolute self-center z-30 cursor-pointer`}>
+        <label className={'flex-none flex items-center justify-center pl-3.5 pr-2.5 py-3 z-10 cursor-pointer select-none m-0'}>
             <FileActionCheckbox
                 name={'selectedFiles'}
                 value={name}
