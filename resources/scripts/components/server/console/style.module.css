@@ -21,17 +21,8 @@
 .terminal {
     @apply flex flex-col w-full;
 
-    & .overflows_container {
-        @apply -ml-4 sm:ml-0;
-        width: calc(100% + 2rem);
-
-        @screen sm {
-            @apply w-full;
-        }
-    }
-
     & > .container {
-        @apply rounded-t p-1 sm:p-2 bg-black min-h-[16rem] flex-1 font-mono text-sm;
+        @apply p-2 sm:p-3 bg-[#0a0d12] min-h-[20rem] flex-1 font-mono text-sm;
 
         & #terminal {
             @apply h-full;
@@ -41,20 +32,20 @@
             }
 
             &::-webkit-scrollbar-thumb {
-                @apply bg-gray-900;
+                @apply bg-neutral-800 rounded;
             }
         }
     }
 
     & .command_icon {
-        @apply flex items-center top-0 left-0 absolute z-10 select-none h-full px-3 transition-colors duration-100;
+        @apply flex items-center top-0 left-0 absolute z-10 select-none h-full px-3.5 text-neutral-500 transition-colors duration-100;
     }
 
     & .command_input {
-        @apply relative bg-gray-900 px-2 text-gray-100 pl-10 pr-4 py-2 w-full font-mono text-sm sm:rounded-b;
+        @apply relative bg-[#0e131a] px-2 text-neutral-100 pl-10 pr-4 py-2.5 w-full font-mono text-sm;
         @apply focus:ring-0 outline-none focus-visible:outline-none;
-        @apply border-0 border-b-2 border-transparent transition-colors duration-100;
-        @apply active:border-cyan-500 focus:border-cyan-500;
+        @apply border-0 border-t border-white/[0.08] transition-colors duration-100;
+        @apply active:border-blue-500/40 focus:border-blue-500/40;
     }
 }
 

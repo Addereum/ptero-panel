@@ -11,7 +11,6 @@ import { object, ref, string } from 'yup';
 import Field from '@/components/elements/Field';
 import Input from '@/components/elements/Input';
 import tw from 'twin.macro';
-import Button from '@/components/elements/Button';
 
 interface Values {
     password: string;
@@ -61,34 +60,62 @@ export default ({ match, location }: RouteComponentProps<{ token: string }>) => 
             })}
         >
             {({ isSubmitting }) => (
-                <LoginFormContainer title={'Reset Password'} css={tw`w-full flex`}>
-                    <div>
-                        <label>Email</label>
-                        <Input value={email} isLight disabled />
+                <LoginFormContainer
+                    title={'Set New Password'}
+                    subtitle={'Please choose and confirm your new account password.'}
+                >
+                    <div css={tw`mt-2`}>
+                        <label css={tw`block text-xs font-medium text-neutral-300 tracking-wide mb-1.5`}>
+                            Email Address
+                        </label>
+                        <Input value={email} disabled />
                     </div>
-                    <div css={tw`mt-6`}>
+                    <div css={tw`mt-4`}>
                         <Field
-                            light
                             label={'New Password'}
                             name={'password'}
                             type={'password'}
+                            placeholder={'••••••••'}
                             description={'Passwords must be at least 8 characters in length.'}
+                            disabled={isSubmitting}
+                        />
+                    </div>
+                    <div css={tw`mt-4`}>
+                        <Field
+                            label={'Confirm New Password'}
+                            name={'passwordConfirmation'}
+                            type={'password'}
+                            placeholder={'••••••••'}
+                            disabled={isSubmitting}
                         />
                     </div>
                     <div css={tw`mt-6`}>
-                        <Field light label={'Confirm New Password'} name={'passwordConfirmation'} type={'password'} />
+                        <button
+                            type={'submit'}
+                            disabled={isSubmitting}
+                            css={[
+                                tw`w-full py-3 px-4 rounded-xl font-medium text-sm text-white flex items-center justify-center transition-all duration-150 border-0 cursor-pointer`,
+                                isSubmitting
+                                    ? tw`bg-blue-600/70 cursor-not-allowed`
+                                    : tw`bg-blue-600 hover:bg-blue-500 active:scale-[0.99]`,
+                            ]}
+                            style={{
+                                boxShadow: isSubmitting ? 'none' : '0 10px 25px -5px rgba(37, 99, 235, 0.35)',
+                            }}
+                        >
+                            {isSubmitting ? (
+                                <div css={tw`w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin`} />
+                            ) : (
+                                'Update Password'
+                            )}
+                        </button>
                     </div>
-                    <div css={tw`mt-6`}>
-                        <Button size={'xlarge'} type={'submit'} disabled={isSubmitting} isLoading={isSubmitting}>
-                            Reset Password
-                        </Button>
-                    </div>
-                    <div css={tw`mt-6 text-center`}>
+                    <div css={tw`mt-5 text-center`}>
                         <Link
                             to={'/auth/login'}
-                            css={tw`text-xs text-neutral-500 tracking-wide no-underline uppercase hover:text-neutral-600`}
+                            css={tw`text-xs font-medium text-neutral-400 hover:text-white transition-colors duration-150 no-underline`}
                         >
-                            Return to Login
+                            &larr; Return to Sign In
                         </Link>
                     </div>
                 </LoginFormContainer>

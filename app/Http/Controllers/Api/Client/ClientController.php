@@ -6,6 +6,7 @@ use Pterodactyl\Models\Server;
 use Pterodactyl\Models\Permission;
 use Spatie\QueryBuilder\QueryBuilder;
 use Spatie\QueryBuilder\AllowedFilter;
+use Illuminate\Database\Eloquent\Builder;
 use Pterodactyl\Models\Filters\MultiFieldServerFilter;
 use Pterodactyl\Transformers\Api\Client\ServerTransformer;
 use Pterodactyl\Http\Requests\Api\Client\GetServersRequest;
@@ -37,7 +38,13 @@ class ClientController extends ClientApiController
             'name',
             'description',
             'external_id',
-            AllowedFilter::custom('*', new MultiFieldServerFilter()),
+            AllowedFilter::callback('*', static function (Builder $builder, mixed $_value, string $property) use ($request): void {
+                // Query Builder normalizes comma-separated values and booleans. Search the literal input.
+                $term = $request->input('filter')['*'] ?? null;
+                abort_unless(is_string($term), 422, 'The server search filter must be a string.');
+
+                (new MultiFieldServerFilter())($builder, $term, $property);
+            }),
         ]);
 
         $type = $request->input('type');

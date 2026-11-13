@@ -6,7 +6,6 @@ import { SearchBarAddon } from 'xterm-addon-search-bar';
 import { WebLinksAddon } from 'xterm-addon-web-links';
 import { Unicode11Addon } from 'xterm-addon-unicode11';
 import { ScrollDownHelperAddon } from '@/plugins/XtermScrollDownHelperAddon';
-import SpinnerOverlay from '@/components/elements/SpinnerOverlay';
 import { ServerContext } from '@/state/server';
 import { usePermissions } from '@/plugins/usePermissions';
 import { theme as th } from 'twin.macro';
@@ -200,20 +199,17 @@ export default () => {
 
     return (
         <div className={classNames(styles.terminal, 'relative')}>
-            <SpinnerOverlay visible={!connected} size={'large'} />
-            <div
-                className={classNames(styles.container, styles.overflows_container, { 'rounded-b': !canSendCommands })}
-            >
+            <div className={styles.container}>
                 <div className={'h-full'}>
                     <div id={styles.terminal} ref={ref} />
                 </div>
             </div>
             {canSendCommands && (
-                <div className={classNames('relative', styles.overflows_container)}>
+                <div className={'relative'}>
                     <input
                         className={classNames('peer', styles.command_input)}
                         type={'text'}
-                        placeholder={'Type a command...'}
+                        placeholder={'Enter command or type /help...'}
                         aria-label={'Console command input.'}
                         disabled={!instance || !connected}
                         onKeyDown={handleCommandKeyDown}
@@ -222,7 +218,7 @@ export default () => {
                     />
                     <div
                         className={classNames(
-                            'text-gray-100 peer-focus:text-gray-50 peer-focus:animate-pulse',
+                            'text-neutral-500 peer-focus:text-neutral-300 peer-focus:animate-pulse',
                             styles.command_icon
                         )}
                     >

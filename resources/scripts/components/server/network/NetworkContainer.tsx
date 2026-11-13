@@ -56,22 +56,37 @@ const NetworkContainer = () => {
                 <Spinner size={'large'} centered />
             ) : (
                 <>
+                    <div className={'flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4'}>
+                        <div>
+                            <h2 className={'text-xl font-semibold text-white tracking-tight'}>Network Allocations</h2>
+                            <p className={'text-xs text-neutral-400 mt-0.5'}>
+                                Manage IP addresses, port bindings, and connection endpoints assigned to this server.
+                            </p>
+                        </div>
+                        {allocationLimit > 0 && allocationLimit > data.length && (
+                            <Can action={'allocation.create'}>
+                                <button
+                                    type={'button'}
+                                    onClick={onCreateAllocation}
+                                    className={
+                                        'inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 border border-blue-500/30 shadow-sm transition-all duration-150 cursor-pointer self-start sm:self-auto'
+                                    }
+                                >
+                                    + Create Allocation
+                                </button>
+                            </Can>
+                        )}
+                    </div>
                     {data.map((allocation) => (
                         <AllocationRow key={`${allocation.ip}:${allocation.port}`} allocation={allocation} />
                     ))}
                     {allocationLimit > 0 && (
                         <Can action={'allocation.create'}>
                             <SpinnerOverlay visible={loading} />
-                            <div css={tw`mt-6 sm:flex items-center justify-end`}>
-                                <p css={tw`text-sm text-neutral-300 mb-4 sm:mr-6 sm:mb-0`}>
-                                    You are currently using {data.length} of {allocationLimit} allowed allocations for
-                                    this server.
+                            <div className={'mt-4 flex items-center justify-end'}>
+                                <p className={'text-xs text-neutral-400'}>
+                                    Currently using {data.length} of {allocationLimit} allowed allocations for this server.
                                 </p>
-                                {allocationLimit > data.length && (
-                                    <Button css={tw`w-full sm:w-auto`} color={'primary'} onClick={onCreateAllocation}>
-                                        Create Allocation
-                                    </Button>
-                                )}
                             </div>
                         </Can>
                     )}

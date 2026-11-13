@@ -9,7 +9,6 @@ import Field from '@/components/elements/Field';
 import { Formik, FormikHelpers } from 'formik';
 import { object, string } from 'yup';
 import tw from 'twin.macro';
-import Button from '@/components/elements/Button';
 import Reaptcha from 'reaptcha';
 import useFlash from '@/plugins/useFlash';
 
@@ -72,20 +71,40 @@ export default () => {
             })}
         >
             {({ isSubmitting, setSubmitting, submitForm }) => (
-                <LoginFormContainer title={'Request Password Reset'} css={tw`w-full flex`}>
-                    <Field
-                        light
-                        label={'Email'}
-                        description={
-                            'Enter your account email address to receive instructions on resetting your password.'
-                        }
-                        name={'email'}
-                        type={'email'}
-                    />
+                <LoginFormContainer
+                    title={'Reset Password'}
+                    subtitle={'Enter your email address and we will send you instructions to reset your password.'}
+                >
+                    <div css={tw`mt-4`}>
+                        <Field
+                            label={'Email Address'}
+                            name={'email'}
+                            type={'email'}
+                            placeholder={'name@example.com'}
+                            disabled={isSubmitting}
+                            autoFocus
+                        />
+                    </div>
                     <div css={tw`mt-6`}>
-                        <Button type={'submit'} size={'xlarge'} disabled={isSubmitting} isLoading={isSubmitting}>
-                            Send Email
-                        </Button>
+                        <button
+                            type={'submit'}
+                            disabled={isSubmitting}
+                            css={[
+                                tw`w-full py-3 px-4 rounded-xl font-medium text-sm text-white flex items-center justify-center transition-all duration-150 border-0 cursor-pointer`,
+                                isSubmitting
+                                    ? tw`bg-blue-600/70 cursor-not-allowed`
+                                    : tw`bg-blue-600 hover:bg-blue-500 active:scale-[0.99]`,
+                            ]}
+                            style={{
+                                boxShadow: isSubmitting ? 'none' : '0 10px 25px -5px rgba(37, 99, 235, 0.35)',
+                            }}
+                        >
+                            {isSubmitting ? (
+                                <div css={tw`w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin`} />
+                            ) : (
+                                'Send Reset Instructions'
+                            )}
+                        </button>
                     </div>
                     {recaptchaEnabled && (
                         <Reaptcha
@@ -102,12 +121,12 @@ export default () => {
                             }}
                         />
                     )}
-                    <div css={tw`mt-6 text-center`}>
+                    <div css={tw`mt-5 text-center`}>
                         <Link
                             to={'/auth/login'}
-                            css={tw`text-xs text-neutral-500 tracking-wide uppercase no-underline hover:text-neutral-700`}
+                            css={tw`text-xs font-medium text-neutral-400 hover:text-white transition-colors duration-150 no-underline`}
                         >
-                            Return to Login
+                            &larr; Return to Sign In
                         </Link>
                     </div>
                 </LoginFormContainer>

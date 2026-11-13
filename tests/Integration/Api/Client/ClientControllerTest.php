@@ -94,6 +94,26 @@ class ClientControllerTest extends ClientApiIntegrationTestCase
             ->assertJsonPath('data.1.attributes.identifier', $servers[2]->uuidShort);
     }
 
+    public function testSearchTermsArePreservedAndFilterBeforePagination()
+    {
+        $user = User::factory()->create();
+        $this->createServerModel(['user_id' => $user->id, 'name' => 'Unrelated server']);
+        $this->createServerModel(['user_id' => $user->id, 'name' => 'Survival, North']);
+        $this->createServerModel(['user_id' => $user->id, 'name' => 'Survival, South']);
+        $booleanName = $this->createServerModel(['user_id' => $user->id, 'name' => 'True']);
+
+        $this->actingAs($user)->getJson('/api/client?filter[*]=Survival%2C&per_page=1&page=2')
+            ->assertOk()
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('meta.pagination.total', 2)
+            ->assertJsonPath('meta.pagination.current_page', 2);
+
+        $this->actingAs($user)->getJson('/api/client?filter[*]=true')
+            ->assertOk()
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.attributes.identifier', $booleanName->uuidShort);
+    }
+
     /**
      * Test that using ?filter[*]=:25565 or ?filter[*]=192.168.1.1:25565 returns only those servers
      * with the same allocation for the given user.

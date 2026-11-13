@@ -60,59 +60,72 @@ const AllocationRow = ({ allocation }: Props) => {
     };
 
     return (
-        <GreyRowBox $hoverable={false} className={'flex-wrap md:flex-nowrap mt-2'}>
-            <div className={'flex items-center w-full md:w-auto'}>
-                <div className={'pl-4 pr-6 text-neutral-400'}>
-                    <FontAwesomeIcon icon={faNetworkWired} />
+        <div
+            className={'flex flex-wrap md:flex-nowrap items-center justify-between gap-4 p-4 rounded-xl mb-3'}
+            style={{
+                backgroundColor: '#141a22',
+                border: '1px solid rgba(255, 255, 255, 0.08)',
+                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.12)',
+            }}
+        >
+            <div className={'flex items-center gap-3 w-full md:w-auto'}>
+                <div className={'w-10 h-10 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-neutral-400 flex-shrink-0'}>
+                    <FontAwesomeIcon icon={faNetworkWired} className={'text-sm'} />
                 </div>
-                <div className={'mr-4 flex-1 md:w-40'}>
-                    {allocation.alias ? (
-                        <CopyOnClick text={allocation.alias}>
-                            <Code dark className={'w-40 truncate'}>
-                                {allocation.alias}
-                            </Code>
-                        </CopyOnClick>
-                    ) : (
-                        <CopyOnClick text={ip(allocation.ip)}>
-                            <Code dark>{ip(allocation.ip)}</Code>
-                        </CopyOnClick>
-                    )}
-                    <Label>{allocation.alias ? 'Hostname' : 'IP Address'}</Label>
-                </div>
-                <div className={'w-16 md:w-24 overflow-hidden'}>
-                    <Code dark>{allocation.port}</Code>
-                    <Label>Port</Label>
+                <div className={'flex items-center gap-3 min-w-0'}>
+                    <div>
+                        <div className={'flex items-center gap-2'}>
+                            <CopyOnClick text={allocation.alias || `${ip(allocation.ip)}:${allocation.port}`}>
+                                <span className={'font-mono text-sm font-semibold text-white cursor-pointer hover:text-blue-400 transition-colors'}>
+                                    {ip(allocation.ip)}:{allocation.port}
+                                </span>
+                            </CopyOnClick>
+                            {allocation.isDefault && (
+                                <span className={'px-2 py-0.5 rounded-full text-[10px] font-semibold tracking-wider uppercase bg-cyan-500/15 text-cyan-400 border border-cyan-500/30'}>
+                                    Primary
+                                </span>
+                            )}
+                        </div>
+                        {allocation.alias && (
+                            <p className={'text-xs font-mono text-neutral-400 mt-0.5'}>
+                                Alias: {allocation.alias}
+                            </p>
+                        )}
+                    </div>
                 </div>
             </div>
-            <div className={'mt-4 w-full md:mt-0 md:flex-1 md:w-auto'}>
+
+            <div className={'w-full md:flex-1 md:w-auto'}>
                 <InputSpinner visible={loading}>
-                    <Textarea
-                        className={'bg-neutral-800 hover:border-neutral-600 border-transparent'}
-                        placeholder={'Notes'}
+                    <input
+                        type={'text'}
+                        className={'w-full bg-neutral-900/60 border border-white/[0.08] hover:border-white/[0.15] focus:border-blue-500/50 rounded-lg px-3 py-1.5 text-xs text-neutral-200 placeholder-neutral-500 outline-none transition-colors'}
+                        placeholder={'Add notes for this port...'}
                         defaultValue={allocation.notes || undefined}
                         onChange={(e) => setAllocationNotes(e.currentTarget.value)}
                     />
                 </InputSpinner>
             </div>
-            <div className={'flex justify-end space-x-4 mt-4 w-full md:mt-0 md:w-48'}>
-                {allocation.isDefault ? (
-                    <Button size={Button.Sizes.Small} className={'!text-gray-50 !bg-blue-600'} disabled>
-                        Primary
-                    </Button>
-                ) : (
+
+            <div className={'flex items-center justify-end gap-2 w-full md:w-auto'}>
+                {!allocation.isDefault && (
                     <>
+                        <Can action={'allocation.update'}>
+                            <button
+                                type={'button'}
+                                onClick={setPrimaryAllocation}
+                                className={'px-3 py-1.5 rounded-lg text-xs font-medium bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-neutral-300 transition-all cursor-pointer'}
+                            >
+                                Make Primary
+                            </button>
+                        </Can>
                         <Can action={'allocation.delete'}>
                             <DeleteAllocationButton allocation={allocation.id} />
-                        </Can>
-                        <Can action={'allocation.update'}>
-                            <Button.Text size={Button.Sizes.Small} onClick={setPrimaryAllocation}>
-                                Make Primary
-                            </Button.Text>
                         </Can>
                     </>
                 )}
             </div>
-        </GreyRowBox>
+        </div>
     );
 };
 

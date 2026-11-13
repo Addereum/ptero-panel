@@ -84,13 +84,16 @@ const StartupContainer = () => {
         )
     ) : (
         <ServerContentBlock title={'Startup Settings'} showFlashKey={'startup:image'}>
-            <div css={tw`md:flex`}>
+            <div css={tw`md:flex gap-4`}>
                 <TitledGreyBox title={'Startup Command'} css={tw`flex-1`}>
-                    <div css={tw`px-1 py-2`}>
-                        <p css={tw`font-mono bg-neutral-900 rounded py-2 px-4`}>{data.invocation}</p>
+                    <div className={'p-1'}>
+                        <div className={'rounded-lg p-3 bg-[#0a0d12] border border-white/[0.06] font-mono text-xs sm:text-sm text-neutral-200 overflow-x-auto leading-relaxed'}>
+                            <span className={'text-yellow-400'}>{data.invocation.split(' ')[0]} </span>
+                            <span className={'text-cyan-300'}>{data.invocation.split(' ').slice(1).join(' ')}</span>
+                        </div>
                     </div>
                 </TitledGreyBox>
-                <TitledGreyBox title={'Docker Image'} css={tw`flex-1 lg:flex-none lg:w-1/3 mt-8 md:mt-0 md:ml-10`}>
+                <TitledGreyBox title={'Docker Image'} css={tw`flex-1 lg:flex-none lg:w-1/3 mt-4 md:mt-0`}>
                     {Object.keys(data.dockerImages).length > 1 && !isCustomImage ? (
                         <>
                             <InputSpinner visible={loading}>
@@ -106,26 +109,24 @@ const StartupContainer = () => {
                                     ))}
                                 </Select>
                             </InputSpinner>
-                            <p css={tw`text-xs text-neutral-300 mt-2`}>
-                                This is an advanced feature allowing you to select a Docker image to use when running
-                                this server instance.
+                            <p css={tw`text-xs text-neutral-400 mt-2`}>
+                                Docker image container used to execute this server instance.
                             </p>
                         </>
                     ) : (
                         <>
                             <Input disabled readOnly value={variables.dockerImage} />
                             {isCustomImage && (
-                                <p css={tw`text-xs text-neutral-300 mt-2`}>
-                                    This {"server's"} Docker image has been manually set by an administrator and cannot
-                                    be changed through this UI.
+                                <p css={tw`text-xs text-neutral-400 mt-2`}>
+                                    This {"server's"} Docker image has been manually set by an administrator.
                                 </p>
                             )}
                         </>
                     )}
                 </TitledGreyBox>
             </div>
-            <h3 css={tw`mt-8 mb-2 text-2xl`}>Variables</h3>
-            <div css={tw`grid gap-8 md:grid-cols-2`}>
+            <h3 className={'mt-8 mb-4 text-lg font-semibold text-white tracking-tight'}>Environment Variables</h3>
+            <div className={'grid gap-4 md:grid-cols-2'}>
                 {data.variables.map((variable) => (
                     <VariableBox key={variable.envVariable} variable={variable} />
                 ))}

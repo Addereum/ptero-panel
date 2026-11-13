@@ -49,7 +49,13 @@ export default () => {
     }
 
     return (
-        <TitledGreyBox title={'Reinstall Server'} css={tw`relative`}>
+        <div
+            className={'rounded-xl overflow-hidden shadow-sm'}
+            style={{
+                backgroundColor: 'rgba(239, 68, 68, 0.04)',
+                border: '1px solid rgba(239, 68, 68, 0.22)',
+            }}
+        >
             <Dialog.Confirm
                 open={modalVisible}
                 title={'Confirm server reinstallation'}
@@ -60,19 +66,38 @@ export default () => {
                 Your server will be stopped and some files may be deleted or modified during this process, are you sure
                 you wish to continue?
             </Dialog.Confirm>
-            <p css={tw`text-sm`}>
-                Reinstalling your server will stop it, and then re-run the installation script that initially set it
-                up.&nbsp;
-                <strong css={tw`font-medium`}>
-                    Some files may be deleted or modified during this process, please back up your data before
-                    continuing.
-                </strong>
-            </p>
-            <div css={tw`mt-6 text-right`}>
-                <Button.Danger variant={Button.Variants.Secondary} onClick={() => setModalVisible(true)}>
-                    Reinstall Server
-                </Button.Danger>
+            <div
+                style={{
+                    backgroundColor: 'rgba(239, 68, 68, 0.08)',
+                    borderBottom: '1px solid rgba(239, 68, 68, 0.15)',
+                    padding: '12px 16px',
+                }}
+            >
+                <p className={'text-xs font-semibold uppercase tracking-wider text-red-400 m-0'}>
+                    Danger Zone &bull; Reinstall Server
+                </p>
             </div>
-        </TitledGreyBox>
+            <div style={{ padding: '16px' }}>
+                <p css={tw`text-sm text-neutral-300`}>
+                    Reinstalling your server will stop it, and then re-run the installation script that initially set it
+                    up.&nbsp;
+                    <strong css={tw`font-medium text-red-300`}>
+                        Some files may be deleted or modified during this process, please back up your data before
+                        continuing.
+                    </strong>
+                </p>
+                <div css={tw`mt-6 text-right`}>
+                    <button
+                        type={'button'}
+                        onClick={() => setModalVisible(true)}
+                        className={
+                            'px-4 py-2 rounded-lg text-xs font-semibold tracking-wide bg-red-500/20 hover:bg-red-500/30 border border-red-500/35 text-red-400 transition-all duration-150 cursor-pointer shadow-sm'
+                        }
+                    >
+                        Reinstall Server
+                    </button>
+                </div>
+            </div>
+        </div>
     );
 };

@@ -564,8 +564,10 @@ body {
     color: #ff1c00;
 }
 
-.content-wrapper {
-    background-color: #33404d;
+.content-wrapper,
+.skin-blue .content-wrapper,
+.skin-blue .wrapper {
+    background-color: #0f141c !important;
 }
 
 .btn-success {
@@ -853,3 +855,297 @@ pre {
 .equal-height .box-body {
     flex: 1;
 }
+
+/* ==========================================================================
+   Apple HIG & Taste Design - Modern macOS Sidebar
+   ========================================================================== */
+
+.skin-blue .main-sidebar, .skin-blue .left-side {
+    background-color: #12171d !important;
+    border-right: 1px solid rgba(255, 255, 255, 0.05) !important;
+    box-shadow: none !important;
+}
+
+.skin-blue .sidebar {
+    padding-bottom: 24px !important;
+}
+
+/* Sidebar client-area switcher */
+.sidebar-switch-wrapper a.sidebar-client-btn:hover {
+    background: rgba(255, 255, 255, 0.08) !important;
+    color: #ffffff !important;
+    border-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+/* Sidebar section headers (Apple HIG typography & subtle hierarchy) */
+.skin-blue .sidebar-menu > li.header {
+    background: transparent !important;
+    color: rgba(255, 255, 255, 0.38) !important;
+    font-size: 10px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.08em !important;
+    text-transform: uppercase !important;
+    padding: 16px 16px 5px 16px !important;
+    margin: 0 !important;
+}
+
+/* Sidebar navigation items as refined macOS rounded pills */
+.skin-blue .sidebar-menu > li {
+    margin: 2px 8px !important;
+    border-radius: 6px !important;
+}
+
+.skin-blue .sidebar-menu > li > a {
+    border-radius: 6px !important;
+    padding: 8px 12px !important;
+    font-size: 13px !important;
+    font-weight: 400 !important;
+    color: rgba(255, 255, 255, 0.72) !important;
+    border-left: none !important;
+    background: transparent !important;
+    display: flex !important;
+    align-items: center !important;
+    transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease !important;
+}
+
+/* Hover state (quiet micro-interaction) */
+.skin-blue .sidebar-menu > li:hover > a,
+.skin-blue .sidebar-menu > li > a:hover {
+    background: rgba(255, 255, 255, 0.06) !important;
+    color: #ffffff !important;
+}
+
+/* Active state (Apple macOS Selected Row) */
+.skin-blue .sidebar-menu > li.active > a {
+    background: rgba(59, 130, 246, 0.18) !important;
+    color: #93c5fd !important;
+    font-weight: 500 !important;
+    border-left: none !important;
+}
+
+/* Optical icon alignment */
+.skin-blue .sidebar-menu > li > a > i.fa {
+    width: 22px !important;
+    min-width: 22px !important;
+    height: 22px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin-right: 10px !important;
+    font-size: 13.5px !important;
+    color: rgba(255, 255, 255, 0.45) !important;
+    transition: color 0.15s ease, transform 0.15s ease !important;
+}
+
+.skin-blue .sidebar-menu > li:hover > a > i.fa {
+    color: #ffffff !important;
+}
+
+.skin-blue .sidebar-menu > li.active > a > i.fa {
+    color: #60a5fa !important;
+}
+
+/* ==========================================================================
+   Admin Topbar Modernization (Apple HIG & Taste Design)
+   ========================================================================== */
+
+.fixed .main-header {
+    box-shadow: none !important;
+}
+
+.skin-blue .main-header {
+    background-color: #12171d !important;
+}
+
+.skin-blue .main-header .logo {
+    background-color: #12171d !important;
+    border-right: 1px solid rgba(255, 255, 255, 0.05) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+    font-weight: 600 !important;
+    font-size: 14.5px !important;
+    letter-spacing: -0.015em !important;
+    color: #f1f5f9 !important;
+    height: 50px !important;
+    line-height: 50px !important;
+    padding: 0 16px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: background-color 0.15s ease !important;
+    text-decoration: none !important;
+}
+
+.skin-blue .main-header .logo:hover {
+    background-color: #151c24 !important;
+    color: #ffffff !important;
+}
+
+.skin-blue .main-header .logo .logo-lg {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+}
+
+.skin-blue .main-header .admin-badge {
+    display: inline-block !important;
+    font-size: 9.5px !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.06em !important;
+    line-height: 1 !important;
+    padding: 3px 6px !important;
+    border-radius: 4px !important;
+    background: rgba(59, 130, 246, 0.12) !important;
+    color: #60a5fa !important;
+    border: 1px solid rgba(59, 130, 246, 0.22) !important;
+    vertical-align: middle !important;
+}
+
+.skin-blue .main-header .navbar {
+    background-color: #12171d !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+    box-shadow: none !important;
+    min-height: 50px !important;
+    height: 50px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    padding: 0 12px 0 0 !important;
+}
+
+/* Sidebar Toggle button */
+.skin-blue .main-header .navbar .sidebar-toggle {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 32px !important;
+    height: 32px !important;
+    margin: 9px 8px 9px 12px !important;
+    padding: 0 !important;
+    border-radius: 6px !important;
+    background: rgba(255, 255, 255, 0.03) !important;
+    border: 1px solid rgba(255, 255, 255, 0.06) !important;
+    color: #94a3b8 !important;
+    font-size: 13px !important;
+    line-height: 1 !important;
+    transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    text-decoration: none !important;
+}
+
+.skin-blue .main-header .navbar .sidebar-toggle:hover {
+    background: rgba(255, 255, 255, 0.08) !important;
+    border-color: rgba(255, 255, 255, 0.12) !important;
+    color: #f8fafc !important;
+    transform: translateY(-0.5px);
+}
+
+.skin-blue .main-header .navbar .sidebar-toggle:before {
+    display: inline-block;
+    line-height: 1;
+}
+
+/* Custom right menu container */
+.skin-blue .main-header .navbar-custom-menu {
+    float: none !important;
+    margin-left: auto !important;
+}
+
+.skin-blue .main-header .navbar-custom-menu .navbar-nav {
+    display: flex !important;
+    align-items: center !important;
+    height: 50px !important;
+    margin: 0 !important;
+    gap: 6px !important;
+}
+
+.skin-blue .main-header .navbar-custom-menu .navbar-nav > li {
+    float: none !important;
+    display: flex !important;
+    align-items: center !important;
+    margin: 0 !important;
+}
+
+/* User pill capsule */
+.skin-blue .main-header .navbar .nav > li.user-menu > a.topbar-user-pill,
+.skin-blue .main-header .navbar .nav > li.user-menu > a {
+    display: inline-flex !important;
+    align-items: center !important;
+    height: 32px !important;
+    padding: 3px 12px 3px 5px !important;
+    border-radius: 16px !important;
+    background: rgba(255, 255, 255, 0.035) !important;
+    border: 1px solid rgba(255, 255, 255, 0.07) !important;
+    color: #e2e8f0 !important;
+    text-decoration: none !important;
+    font-size: 12.5px !important;
+    font-weight: 500 !important;
+    transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    line-height: 1 !important;
+}
+
+.skin-blue .main-header .navbar .nav > li.user-menu > a.topbar-user-pill:hover,
+.skin-blue .main-header .navbar .nav > li.user-menu > a:hover {
+    background: rgba(255, 255, 255, 0.08) !important;
+    border-color: rgba(255, 255, 255, 0.14) !important;
+    color: #ffffff !important;
+}
+
+.skin-blue .main-header .navbar .nav > li.user-menu img.user-image {
+    width: 22px !important;
+    height: 22px !important;
+    border-radius: 50% !important;
+    margin-right: 8px !important;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    float: none !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    object-fit: cover !important;
+    display: inline-block !important;
+    vertical-align: middle !important;
+}
+
+/* Topbar action buttons */
+.skin-blue .main-header .navbar .topbar-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    height: 32px !important;
+    text-decoration: none !important;
+    border-radius: 6px !important;
+    transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    line-height: 1 !important;
+}
+
+.skin-blue .main-header .navbar .topbar-btn-client {
+    padding: 0 10px !important;
+    gap: 6px !important;
+    background: rgba(255, 255, 255, 0.035) !important;
+    border: 1px solid rgba(255, 255, 255, 0.07) !important;
+    color: #94a3b8 !important;
+    font-size: 12px !important;
+    font-weight: 500 !important;
+}
+
+.skin-blue .main-header .navbar .topbar-btn-client:hover {
+    background: rgba(59, 130, 246, 0.12) !important;
+    border-color: rgba(59, 130, 246, 0.25) !important;
+    color: #93c5fd !important;
+    transform: translateY(-0.5px);
+}
+
+.skin-blue .main-header .navbar .topbar-btn-logout {
+    width: 32px !important;
+    padding: 0 !important;
+    background: rgba(239, 68, 68, 0.07) !important;
+    border: 1px solid rgba(239, 68, 68, 0.16) !important;
+    color: #f87171 !important;
+    font-size: 13.5px !important;
+}
+
+.skin-blue .main-header .navbar .topbar-btn-logout:hover {
+    background: rgba(239, 68, 68, 0.18) !important;
+    border-color: rgba(239, 68, 68, 0.3) !important;
+    color: #fca5a5 !important;
+    transform: translateY(-0.5px);
+}
+

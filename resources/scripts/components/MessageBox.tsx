@@ -13,13 +13,13 @@ interface Props {
 const styling = (type?: FlashMessageType): TwStyle | string => {
     switch (type) {
         case 'error':
-            return tw`bg-red-600 border-red-800`;
+            return tw`bg-red-500/10 border-red-500/30 text-red-200`;
         case 'info':
-            return tw`bg-primary-600 border-primary-800`;
+            return tw`bg-blue-500/10 border-blue-500/30 text-blue-200`;
         case 'success':
-            return tw`bg-green-600 border-green-800`;
+            return tw`bg-green-500/10 border-green-500/30 text-green-200`;
         case 'warning':
-            return tw`bg-yellow-600 border-yellow-800`;
+            return tw`bg-yellow-500/10 border-yellow-500/30 text-yellow-200`;
         default:
             return '';
     }
@@ -28,20 +28,20 @@ const styling = (type?: FlashMessageType): TwStyle | string => {
 const getBackground = (type?: FlashMessageType): TwStyle | string => {
     switch (type) {
         case 'error':
-            return tw`bg-red-500`;
+            return tw`bg-red-500/20 text-red-300 border border-red-500/30`;
         case 'info':
-            return tw`bg-primary-500`;
+            return tw`bg-blue-500/20 text-blue-300 border border-blue-500/30`;
         case 'success':
-            return tw`bg-green-500`;
+            return tw`bg-green-500/20 text-green-300 border border-green-500/30`;
         case 'warning':
-            return tw`bg-yellow-500`;
+            return tw`bg-yellow-500/20 text-yellow-300 border border-yellow-500/30`;
         default:
             return '';
     }
 };
 
 const Container = styled.div<{ $type?: FlashMessageType }>`
-    ${tw`p-2 border items-center leading-normal rounded flex w-full text-sm text-white`};
+    ${tw`p-3 border items-center leading-normal rounded-xl flex w-full text-sm backdrop-blur-sm`};
     ${(props) => styling(props.$type)};
 `;
 Container.displayName = 'MessageBox.Container';

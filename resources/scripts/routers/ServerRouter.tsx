@@ -102,7 +102,10 @@ export default () => {
                     </CSSTransition>
                     <InstallListener />
                     <TransferListener />
-                    <WebsocketHandler />
+                    <WebsocketHandler
+                        key={uuid}
+                        isConsole={location.pathname.replace(/\/$/, '') === match.url.replace(/\/$/, '')}
+                    />
                     {inConflictState && (!rootAdmin || (rootAdmin && !location.pathname.endsWith(`/server/${id}`))) ? (
                         <ConflictStateRenderer />
                     ) : (

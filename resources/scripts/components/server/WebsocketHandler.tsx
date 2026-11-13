@@ -1,128 +1,157 @@
 import React, { useEffect, useState } from 'react';
+import { isAxiosError } from 'axios';
 import { Websocket } from '@/plugins/Websocket';
 import { ServerContext } from '@/state/server';
 import getWebsocketToken from '@/api/server/getWebsocketToken';
 import ContentContainer from '@/components/elements/ContentContainer';
-import { CSSTransition } from 'react-transition-group';
-import Spinner from '@/components/elements/Spinner';
-import tw from 'twin.macro';
+import ConsoleConnectionStatus, { ConsoleConnectionState } from '@/components/server/console/ConsoleConnectionStatus';
+import { SocketEvent } from '@/components/server/events';
 
 const reconnectErrors = ['jwt: exp claim is invalid', 'jwt: created too far in past (denylist)'];
+const connectionTimeout = 25_000;
 
-export default () => {
-    let updatingToken = false;
-    const [error, setError] = useState<'connecting' | string>('');
-    const { connected, instance } = ServerContext.useStoreState((state) => state.socket);
+const tokenFailure = (error: unknown): ConsoleConnectionState => {
+    const status = isAxiosError(error) ? error.response?.status : undefined;
+    if (status === 403) return 'access-denied';
+    if (status === 401 || status === 419) return 'authentication-failed';
+
+    return 'connection-failed';
+};
+
+export default ({ isConsole }: { isConsole: boolean }) => {
+    const [status, setStatus] = useState<ConsoleConnectionState>('connecting');
+    const [attempt, setAttempt] = useState(0);
     const uuid = ServerContext.useStoreState((state) => state.server.data?.uuid);
     const setServerStatus = ServerContext.useStoreActions((actions) => actions.status.setServerStatus);
     const { setInstance, setConnectionState } = ServerContext.useStoreActions((actions) => actions.socket);
 
-    const updateToken = (uuid: string, socket: Websocket) => {
-        if (updatingToken) return;
+    const retry = () => setAttempt((previous) => previous + 1);
 
-        updatingToken = true;
-        getWebsocketToken(uuid)
-            .then((data) => socket.setToken(data.token, true))
-            .catch((error) => console.error(error))
-            .then(() => {
-                updatingToken = false;
-            });
-    };
+    useEffect(() => {
+        if (!uuid) return;
 
-    const connect = (uuid: string) => {
+        const controller = new AbortController();
+        const { signal } = controller;
         const socket = new Websocket();
+        let updatingToken = false;
+        let authenticated = false;
+        let timeout: number | undefined;
 
-        socket.on('auth success', () => setConnectionState(true));
-        socket.on('SOCKET_CLOSE', () => setConnectionState(false));
-        socket.on('SOCKET_CONNECT_ERROR', () => {
-            setError('Failed to connect to websocket instance after multiple attempts: try refreshing the page.');
-        });
-        socket.on('SOCKET_ERROR', () => {
-            setError('connecting');
+        const clearConnectionTimeout = () => {
+            window.clearTimeout(timeout);
+            timeout = undefined;
+        };
+
+        const disconnect = (status: ConsoleConnectionState) => {
+            clearConnectionTimeout();
+            socket.close();
+            controller.abort();
             setConnectionState(false);
-        });
-        socket.on('status', (status) => setServerStatus(status));
+            setInstance(null);
+            setStatus(status);
+        };
 
-        socket.on('daemon error', (message) => {
+        const startConnectionTimeout = () => {
+            if (timeout === undefined) {
+                timeout = window.setTimeout(() => disconnect('unreachable'), connectionTimeout);
+            }
+        };
+
+        const reconnecting = () => {
+            authenticated = false;
+            startConnectionTimeout();
+            setConnectionState(false);
+            setStatus('reconnecting');
+        };
+
+        const updateToken = async () => {
+            if (updatingToken || signal.aborted) return;
+
+            updatingToken = true;
+            try {
+                const data = await getWebsocketToken(uuid, signal);
+                if (!signal.aborted) socket.setToken(data.token, true);
+            } catch (error) {
+                // An early refresh can fail while the existing token is still usable.
+                if (!signal.aborted && !authenticated) disconnect(tokenFailure(error));
+            } finally {
+                updatingToken = false;
+            }
+        };
+
+        setConnectionState(false);
+        setServerStatus(null);
+        setStatus('connecting');
+
+        socket.on('auth success', () => {
+            authenticated = true;
+            clearConnectionTimeout();
+            setConnectionState(true);
+            setStatus('connected');
+        });
+        socket.on('SOCKET_CLOSE', (terminal: boolean) => {
+            if (terminal) {
+                disconnect('disconnected');
+            } else {
+                reconnecting();
+            }
+        });
+        socket.on('SOCKET_CONNECT_ERROR', () => disconnect('unreachable'));
+        socket.on('SOCKET_ERROR', reconnecting);
+        socket.on(SocketEvent.STATUS, setServerStatus);
+        socket.on(SocketEvent.DAEMON_ERROR, (message) => {
             console.warn('Got error message from daemon socket:', message);
         });
 
-        socket.on('token expiring', () => updateToken(uuid, socket));
-        socket.on('token expired', () => updateToken(uuid, socket));
+        socket.on('token expiring', updateToken);
+        socket.on('token expired', () => {
+            reconnecting();
+            updateToken();
+        });
         socket.on('jwt error', (error: string) => {
-            setConnectionState(false);
             console.warn('JWT validation error from wings:', error);
-
-            if (reconnectErrors.find((v) => error.toLowerCase().indexOf(v) >= 0)) {
-                updateToken(uuid, socket);
+            if (reconnectErrors.some((reason) => error.toLowerCase().includes(reason))) {
+                reconnecting();
+                updateToken();
             } else {
-                setError(
-                    'There was an error validating the credentials provided for the websocket. Please refresh the page.'
-                );
+                disconnect('authentication-failed');
             }
         });
 
-        socket.on('transfer status', (status: string) => {
-            if (status === 'starting' || status === 'success') {
-                return;
-            }
+        socket.on(SocketEvent.TRANSFER_STATUS, (status: string) => {
+            if (status === 'starting' || status === 'success') return;
 
-            // This code forces a reconnection to the websocket which will connect us to the target node instead of the source node
-            // in order to be able to receive transfer logs from the target node.
-            socket.close();
-            setError('connecting');
-            setConnectionState(false);
-            setInstance(null);
-            connect(uuid);
+            // Request a new socket URL so transfer logs can come from the destination node.
+            setAttempt((previous) => previous + 1);
         });
 
-        getWebsocketToken(uuid)
-            .then((data) => {
-                // Connect and then set the authentication token.
-                socket.setToken(data.token).connect(data.socket);
+        getWebsocketToken(uuid, signal)
+            .then(({ token, socket: url }) => {
+                if (signal.aborted) return;
 
-                // Once that is done, set the instance.
+                startConnectionTimeout();
+                socket.setToken(token).connect(url);
                 setInstance(socket);
             })
-            .catch((error) => console.error(error));
-    };
+            .catch((error) => {
+                if (!signal.aborted) disconnect(tokenFailure(error));
+            });
 
-    useEffect(() => {
-        connected && setError('');
-    }, [connected]);
-
-    useEffect(() => {
         return () => {
-            instance && instance.close();
+            clearConnectionTimeout();
+            controller.abort();
+            socket.removeAllListeners();
+            socket.close();
+            setInstance(null);
+            setConnectionState(false);
         };
-    }, [instance]);
+    }, [uuid, attempt, setInstance, setConnectionState, setServerStatus]);
 
-    useEffect(() => {
-        // If there is already an instance or there is no server, just exit out of this process
-        // since we don't need to make a new connection.
-        if (instance || !uuid) {
-            return;
-        }
+    if (!uuid || status === 'connected' || (!isConsole && status === 'connecting')) return null;
 
-        connect(uuid);
-    }, [uuid]);
-
-    return error ? (
-        <CSSTransition timeout={150} in appear classNames={'fade'}>
-            <div css={tw`bg-red-500 py-2`}>
-                <ContentContainer css={tw`flex items-center justify-center`}>
-                    {error === 'connecting' ? (
-                        <>
-                            <Spinner size={'small'} />
-                            <p css={tw`ml-2 text-sm text-red-100`}>
-                                We&apos;re having some trouble connecting to your server, please wait...
-                            </p>
-                        </>
-                    ) : (
-                        <p css={tw`ml-2 text-sm text-white`}>{error}</p>
-                    )}
-                </ContentContainer>
-            </div>
-        </CSSTransition>
-    ) : null;
+    return (
+        <ContentContainer className={'mt-4'}>
+            <ConsoleConnectionStatus status={status} onRetry={retry} />
+        </ContentContainer>
+    );
 };

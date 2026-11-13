@@ -7,13 +7,15 @@ export interface Props {
 }
 
 const light = css<Props>`
-    ${tw`bg-white border-neutral-200 text-neutral-800`};
+    ${tw`text-neutral-100`};
+    background-color: rgba(13, 18, 25, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     &:focus {
-        ${tw`border-primary-400`}
+        ${tw`border-blue-500`}
     }
 
     &:disabled {
-        ${tw`bg-neutral-100 border-neutral-200`};
+        ${tw`opacity-60`};
     }
 `;
 
@@ -40,12 +42,13 @@ const inputStyle = css<Props>`
     // Reset to normal styling.
     resize: none;
     ${tw`appearance-none outline-none w-full min-w-0`};
-    ${tw`p-3 border-2 rounded text-sm transition-all duration-150`};
-    ${tw`bg-neutral-600 border-neutral-500 hover:border-neutral-400 text-neutral-200 shadow-none focus:ring-0`};
+    ${tw`px-3.5 py-2.5 border rounded-xl text-sm transition-all duration-150`};
+    ${tw`border-neutral-700 hover:border-neutral-500 text-neutral-100 shadow-none focus:ring-0 placeholder-neutral-500`};
+    background-color: rgba(13, 18, 25, 0.9);
 
     & + .input-help {
-        ${tw`mt-1 text-xs`};
-        ${(props) => (props.hasError ? tw`text-red-200` : tw`text-neutral-200`)};
+        ${tw`mt-1.5 text-xs`};
+        ${(props) => (props.hasError ? tw`text-red-300` : tw`text-neutral-400`)};
     }
 
     &:required,
@@ -54,16 +57,17 @@ const inputStyle = css<Props>`
     }
 
     &:not(:disabled):not(:read-only):focus {
-        ${tw`shadow-md border-primary-300 ring-2 ring-primary-400 ring-opacity-50`};
-        ${(props) => props.hasError && tw`border-red-300 ring-red-200`};
+        ${tw`border-blue-500 ring-2 ring-blue-500/20`};
+        ${(props) => props.hasError && tw`border-red-400 ring-red-400/20`};
     }
 
     &:disabled {
-        ${tw`opacity-75`};
+        ${tw`opacity-60 cursor-not-allowed`};
+        background-color: rgba(30, 38, 51, 0.4);
     }
 
     ${(props) => props.isLight && light};
-    ${(props) => props.hasError && tw`text-red-100 border-red-400 hover:border-red-300`};
+    ${(props) => props.hasError && tw`text-red-200 border-red-500 hover:border-red-400`};
 `;
 
 const Input = styled.input<Props>`

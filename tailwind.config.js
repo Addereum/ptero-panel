@@ -1,16 +1,16 @@
 const colors = require('tailwindcss/colors');
 
 const gray = {
-    50: 'hsl(216, 33%, 97%)',
-    100: 'hsl(214, 15%, 91%)',
-    200: 'hsl(210, 16%, 82%)',
-    300: 'hsl(211, 13%, 65%)',
-    400: 'hsl(211, 10%, 53%)',
-    500: 'hsl(211, 12%, 43%)',
-    600: 'hsl(209, 14%, 37%)',
-    700: 'hsl(209, 18%, 30%)',
-    800: 'hsl(209, 20%, 25%)',
-    900: 'hsl(210, 24%, 16%)',
+    50: '#f8fafc',
+    100: '#f1f5f9',
+    200: '#e2e8f0',
+    300: '#cbd5e1',
+    400: '#94a3b8',
+    500: '#64748b',
+    600: '#222c3a',
+    700: '#18202b',
+    800: '#12171f',
+    900: '#0f141c',
 };
 
 module.exports = {
@@ -43,7 +43,6 @@ module.exports = {
         },
     },
     plugins: [
-        require('@tailwindcss/line-clamp'),
         require('@tailwindcss/forms')({
             strategy: 'class',
         }),

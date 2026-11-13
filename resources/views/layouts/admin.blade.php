@@ -39,7 +39,11 @@
         <div class="wrapper">
             <header class="main-header">
                 <a href="{{ route('index') }}" class="logo">
-                    <span>{{ config('app.name', 'Pterodactyl') }}</span>
+                    <span class="logo-mini"><b>{{ strtoupper(substr(config('app.name', 'Pterodactyl'), 0, 1)) }}</b></span>
+                    <span class="logo-lg">
+                        <span>{{ config('app.name', 'Pterodactyl') }}</span>
+                        <span class="admin-badge">Admin</span>
+                    </span>
                 </a>
                 <nav class="navbar navbar-static-top">
                     <a href="#" class="sidebar-toggle" data-toggle="push-menu" role="button">
@@ -51,16 +55,21 @@
                     <div class="navbar-custom-menu">
                         <ul class="nav navbar-nav">
                             <li class="user-menu">
-                                <a href="{{ route('account') }}">
+                                <a href="{{ route('account') }}" class="topbar-user-pill">
                                     <img src="https://www.gravatar.com/avatar/{{ md5(strtolower(Auth::user()->email)) }}?s=160" class="user-image" alt="User Image">
                                     <span class="hidden-xs">{{ Auth::user()->name_first }} {{ Auth::user()->name_last }}</span>
                                 </a>
                             </li>
                             <li>
-                                <li><a href="{{ route('index') }}" data-toggle="tooltip" data-placement="bottom" title="Exit Admin Control"><i class="fa fa-server"></i></a></li>
+                                <a href="{{ route('index') }}" class="topbar-btn topbar-btn-client" data-toggle="tooltip" data-placement="bottom" title="Exit to Client Area">
+                                    <i class="fa fa-th-large"></i>
+                                    <span class="hidden-xs">Client Area</span>
+                                </a>
                             </li>
                             <li>
-                                <li><a href="{{ route('auth.logout') }}" id="logoutButton" data-toggle="tooltip" data-placement="bottom" title="Logout"><i class="fa fa-sign-out"></i></a></li>
+                                <a href="{{ route('auth.logout') }}" id="logoutButton" class="topbar-btn topbar-btn-logout" data-toggle="tooltip" data-placement="bottom" title="Logout">
+                                    <i class="fa fa-sign-out"></i>
+                                </a>
                             </li>
                         </ul>
                     </div>
@@ -68,21 +77,27 @@
             </header>
             <aside class="main-sidebar">
                 <section class="sidebar">
+                    <div class="sidebar-switch-wrapper" style="padding: 12px 12px 4px 12px;">
+                        <a href="{{ route('index') }}" class="sidebar-client-btn" style="display: flex; align-items: center; justify-content: space-between; padding: 7px 11px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); border-radius: 6px; color: #94a3b8; font-size: 11.5px; font-weight: 500; text-decoration: none; transition: all 0.15s ease;">
+                            <span><i class="fa fa-arrow-left" style="margin-right: 7px; opacity: 0.7;"></i> Client Area</span>
+                            <i class="fa fa-external-link" style="font-size: 10px; opacity: 0.4;"></i>
+                        </a>
+                    </div>
                     <ul class="sidebar-menu">
                         <li class="header">BASIC ADMINISTRATION</li>
                         <li class="{{ Route::currentRouteName() !== 'admin.index' ?: 'active' }}">
                             <a href="{{ route('admin.index') }}">
-                                <i class="fa fa-home"></i> <span>Overview</span>
+                                <i class="fa fa-dashboard"></i> <span>Overview</span>
                             </a>
                         </li>
                         <li class="{{ ! starts_with(Route::currentRouteName(), 'admin.settings') ?: 'active' }}">
                             <a href="{{ route('admin.settings')}}">
-                                <i class="fa fa-wrench"></i> <span>Settings</span>
+                                <i class="fa fa-cog"></i> <span>Settings</span>
                             </a>
                         </li>
                         <li class="{{ ! starts_with(Route::currentRouteName(), 'admin.api') ?: 'active' }}">
                             <a href="{{ route('admin.api.index')}}">
-                                <i class="fa fa-gamepad"></i> <span>Application API</span>
+                                <i class="fa fa-key"></i> <span>Application API</span>
                             </a>
                         </li>
                         <li class="header">MANAGEMENT</li>
@@ -114,12 +129,12 @@
                         <li class="header">SERVICE MANAGEMENT</li>
                         <li class="{{ ! starts_with(Route::currentRouteName(), 'admin.mounts') ?: 'active' }}">
                             <a href="{{ route('admin.mounts') }}">
-                                <i class="fa fa-magic"></i> <span>Mounts</span>
+                                <i class="fa fa-hdd-o"></i> <span>Mounts</span>
                             </a>
                         </li>
                         <li class="{{ ! starts_with(Route::currentRouteName(), 'admin.nests') ?: 'active' }}">
                             <a href="{{ route('admin.nests') }}">
-                                <i class="fa fa-th-large"></i> <span>Nests</span>
+                                <i class="fa fa-cubes"></i> <span>Nests</span>
                             </a>
                         </li>
                     </ul>

@@ -1,9 +1,12 @@
 import Sockette from 'sockette';
 import { EventEmitter } from 'events';
 
+const terminalCloseCodes = [1000, 1001, 1005, 4400, 4409];
+
 export class Websocket extends EventEmitter {
     // The socket instance being tracked.
     private socket: Sockette | null = null;
+    private isOpen = false;
 
     // The URL being connected to for the socket.
     private url: string | null = null;
@@ -19,10 +22,12 @@ export class Websocket extends EventEmitter {
     connect(url: string): this {
         this.url = url;
 
-        this.socket = new Sockette(`${this.url}`, {
+        const socket = new Sockette(this.url, {
             timeout: 1000,
             maxAttempts: 20,
             onmessage: (e) => {
+                if (this.socket !== socket) return;
+
                 try {
                     const { event, args } = JSON.parse(e.data);
                     args ? this.emit(event, ...args) : this.emit(event);
@@ -31,28 +36,33 @@ export class Websocket extends EventEmitter {
                 }
             },
             onopen: () => {
+                if (this.socket !== socket) return;
+
+                this.isOpen = true;
                 this.emit('SOCKET_OPEN');
                 this.authenticate();
             },
-            onreconnect: (evt) => {
-                // We return code 4409 from Wings when a server is suspended. We've
-                // gone ahead and reserved 4400 as well here for future expansion without
-                // having to loop back around.
-                //
-                // If either of those codes is returned go ahead and abort here. Unfortunately
-                // the underlying sockette logic always calls reconnect for any code that isn't
-                // 1000/1001/1003, which is painful but we can just stop the flow here.
-                // @ts-expect-error code is actually present here.
-                if (evt.code === 4409 || evt.code === 4400) {
-                    this.close(1000);
-                } else {
-                    this.emit('SOCKET_RECONNECT');
+            onclose: ({ code }) => {
+                if (this.socket !== socket) return;
+
+                this.isOpen = false;
+                // Sockette schedules a retry before calling onclose. Cancel it for Wings' terminal closes.
+                if (code === 4400 || code === 4409) {
+                    this.close();
+                }
+
+                this.emit('SOCKET_CLOSE', terminalCloseCodes.includes(code));
+            },
+            onerror: (error) => {
+                if (this.socket === socket) this.emit('SOCKET_ERROR', error);
+            },
+            onmaximum: (event) => {
+                if (this.socket === socket && !terminalCloseCodes.includes(event?.code)) {
+                    this.emit('SOCKET_CONNECT_ERROR');
                 }
             },
-            onclose: () => this.emit('SOCKET_CLOSE'),
-            onerror: (error) => this.emit('SOCKET_ERROR', error),
-            onmaximum: () => this.emit('SOCKET_CONNECT_ERROR'),
         });
+        this.socket = socket;
 
         return this;
     }
@@ -76,9 +86,12 @@ export class Websocket extends EventEmitter {
     }
 
     close(code?: number, reason?: string) {
+        const socket = this.socket;
+        this.socket = null;
+        this.isOpen = false;
         this.url = null;
         this.token = '';
-        this.socket?.close(code, reason);
+        socket?.close(code, reason);
     }
 
     open() {
@@ -90,6 +103,8 @@ export class Websocket extends EventEmitter {
     }
 
     send(event: string, payload?: string | string[]) {
-        this.socket?.json({ event, args: Array.isArray(payload) ? payload : [payload] });
+        if (this.isOpen) {
+            this.socket?.json({ event, args: Array.isArray(payload) ? payload : [payload] });
+        }
     }
 }

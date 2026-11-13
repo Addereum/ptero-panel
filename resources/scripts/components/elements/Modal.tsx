@@ -22,7 +22,9 @@ export interface ModalProps extends RequiredModalProps {
 
 export const ModalMask = styled.div`
     ${tw`fixed z-50 overflow-auto flex w-full inset-0`};
-    background: rgba(0, 0, 0, 0.7);
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
 `;
 
 const ModalContainer = styled.div<{ alignTop?: boolean }>`
@@ -35,22 +37,30 @@ const ModalContainer = styled.div<{ alignTop?: boolean }>`
     ${(props) =>
         props.alignTop &&
         css`
-            margin-top: 20%;
-            ${breakpoint('md')`margin-top: 10%`};
+            margin-top: 15%;
+            ${breakpoint('md')`margin-top: 8%`};
         `};
 
     margin-bottom: auto;
 
     & > .close-icon {
-        ${tw`absolute right-0 p-2 text-white cursor-pointer opacity-50 transition-all duration-150 ease-linear hover:opacity-100`};
-        top: -2.5rem;
+        ${tw`absolute right-0 text-neutral-400 cursor-pointer transition-all duration-150 flex items-center justify-center`};
+        top: -2.25rem;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.08);
 
         &:hover {
-            ${tw`transform rotate-90`}
+            ${tw`text-white`};
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(255, 255, 255, 0.15);
+            transform: rotate(90deg);
         }
 
         & > svg {
-            ${tw`w-6 h-6`};
+            ${tw`w-3.5 h-3.5`};
         }
     }
 `;
@@ -130,7 +140,12 @@ const Modal: React.FC<ModalProps> = ({
                         </Fade>
                     )}
                     <div
-                        css={tw`bg-neutral-800 p-3 sm:p-4 md:p-6 rounded shadow-md overflow-y-scroll transition-all duration-150`}
+                        css={tw`p-4 sm:p-5 md:p-6 rounded-xl shadow-2xl overflow-y-auto transition-all duration-150`}
+                        style={{
+                            backgroundColor: '#141a22',
+                            border: '1px solid rgba(255, 255, 255, 0.08)',
+                            boxShadow: '0 20px 50px rgba(0, 0, 0, 0.65)',
+                        }}
                     >
                         {children}
                     </div>

@@ -32,6 +32,11 @@ coverage.xml
 resources/lang/locales.js
 .phpunit.result.cache
 
+*.tar.gz
+*.zip
+.agents/
+skills-lock.json
+
 /public/build
 /public/hot
 result

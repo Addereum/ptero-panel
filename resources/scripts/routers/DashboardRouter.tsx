@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { lazy } from 'react';
+import { useStoreState } from 'easy-peasy';
 import { NavLink, Route, Switch } from 'react-router-dom';
 import NavigationBar from '@/components/NavigationBar';
 import DashboardContainer from '@/components/dashboard/DashboardContainer';
@@ -9,8 +10,14 @@ import { useLocation } from 'react-router';
 import Spinner from '@/components/elements/Spinner';
 import routes from '@/routers/routes';
 
+const ServerPreview =
+    process.env.NODE_ENV === 'development'
+        ? lazy(() => import(/* webpackChunkName: "server-preview" */ '@/components/dashboard/ServerPreview'))
+        : null;
+
 export default () => {
     const location = useLocation();
+    const localDevelopment = useStoreState((state) => state.settings.data?.localDevelopment);
 
     return (
         <>
@@ -34,6 +41,11 @@ export default () => {
                         <Route path={'/'} exact>
                             <DashboardContainer />
                         </Route>
+                        {localDevelopment && ServerPreview && (
+                            <Route path={'/dev/server-preview'} exact>
+                                <ServerPreview />
+                            </Route>
+                        )}
                         {routes.account.map(({ path, component: Component }) => (
                             <Route key={path} path={`/account/${path}`.replace('//', '/')} exact>
                                 <Component />
