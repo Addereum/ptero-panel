@@ -47,7 +47,11 @@ export default ({ activity, children }: Props) => {
         <div className={'grid grid-cols-10 py-3.5 px-4 border-b border-white/[0.06] last:border-0 hover:bg-white/[0.02] transition-colors group'}>
             <div className={'hidden sm:flex sm:col-span-1 items-center justify-center select-none'}>
                 <div className={'flex items-center justify-center w-9 h-9 rounded-full bg-white/[0.04] border border-white/[0.08] overflow-hidden'}>
-                    <Avatar name={actor?.uuid || 'system'} />
+                    <Avatar
+                        email={actor?.email}
+                        url={actor?.image}
+                        name={actor?.username || actor?.uuid || 'system'}
+                    />
                 </div>
             </div>
             <div className={'col-span-10 sm:col-span-9 flex'}>
