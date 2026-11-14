@@ -1013,9 +1013,9 @@ pre {
     padding: 0 12px 0 0 !important;
 }
 
-/* Sidebar Toggle button */
+/* Sidebar Toggle button - hidden on desktop, only used on mobile/small screens */
 .skin-blue .main-header .navbar .sidebar-toggle {
-    display: inline-flex !important;
+    display: none !important;
     align-items: center !important;
     justify-content: center !important;
     width: 32px !important;
@@ -1030,6 +1030,50 @@ pre {
     line-height: 1 !important;
     transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1) !important;
     text-decoration: none !important;
+}
+
+@media (max-width: 767px) {
+    .skin-blue .main-header .navbar .sidebar-toggle {
+        display: inline-flex !important;
+    }
+}
+
+/* Force solid, full-width sidebar on desktop - no awkward mini/collapsed state */
+@media (min-width: 768px) {
+    body.skin-blue .main-sidebar,
+    body.skin-blue.sidebar-collapse .main-sidebar {
+        width: 230px !important;
+        transform: translate(0, 0) !important;
+        -webkit-transform: translate(0, 0) !important;
+        display: block !important;
+    }
+    body.skin-blue .main-header .logo,
+    body.skin-blue.sidebar-collapse .main-header .logo {
+        width: 230px !important;
+    }
+    body.skin-blue .main-header .logo .logo-lg,
+    body.skin-blue.sidebar-collapse .main-header .logo .logo-lg {
+        display: inline-flex !important;
+    }
+    body.skin-blue .main-header .logo .logo-mini,
+    body.skin-blue.sidebar-collapse .main-header .logo .logo-mini {
+        display: none !important;
+    }
+    body.skin-blue .main-header .navbar,
+    body.skin-blue.sidebar-collapse .main-header .navbar {
+        margin-left: 230px !important;
+    }
+    body.skin-blue .content-wrapper,
+    body.skin-blue .main-footer,
+    body.skin-blue.sidebar-collapse .content-wrapper,
+    body.skin-blue.sidebar-collapse .main-footer {
+        margin-left: 230px !important;
+    }
+    body.skin-blue.sidebar-collapse .main-sidebar .sidebar-menu > li > a > span,
+    body.skin-blue.sidebar-collapse .main-sidebar .sidebar-menu > li.header,
+    body.skin-blue.sidebar-collapse .main-sidebar .sidebar-switch-wrapper {
+        display: block !important;
+    }
 }
 
 .skin-blue .main-header .navbar .sidebar-toggle:hover {

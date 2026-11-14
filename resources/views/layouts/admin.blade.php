@@ -35,7 +35,7 @@
             <![endif]-->
         @show
     </head>
-    <body class="hold-transition skin-blue fixed sidebar-mini">
+    <body class="hold-transition skin-blue fixed">
         <div class="wrapper">
             <header class="main-header">
                 <a href="{{ route('index') }}" class="logo">
@@ -221,6 +221,7 @@
 
             <script>
                 $(function () {
+                    $('body').removeClass('sidebar-collapse');
                     $('[data-toggle="tooltip"]').tooltip();
                 })
             </script>
